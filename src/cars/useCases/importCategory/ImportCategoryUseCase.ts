@@ -11,7 +11,7 @@ class ImportCategoryUseCase {
 
     constructor(private categoryRepositoy: ICategoryRepository){}
 
-    loadCategories(file: Express.Multer.File){
+    loadCategories(file: Express.Multer.File):Promise<IImportCategory[]>{
       return new Promise((resolver, reject) => {
        const stream = fs.createReadStream(file.path)
        const categories: IImportCategory[] = []
@@ -28,6 +28,7 @@ class ImportCategoryUseCase {
         })
        })
        .on('end', ()=> {
+        fs.promises.unlink(file.path)
         resolver(categories)
        })
        .on('error', (err) =>{
